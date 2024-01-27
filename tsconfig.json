@@ -19,5 +19,5 @@
         "noUnusedParameters": true,
         "noFallthroughCasesInSwitch": true,
     },
-    "include": ["src", "store/state-manager.interface.ts"],
+    "include": ["src", "store/state-container.interface.ts"],
 }

@@ -1,12 +1,12 @@
-import { IStateManager } from "./state-manager.interface";
+import { IStateContainer } from "./state-container.interface";
 import _isEqual from "lodash/isEqual";
 
-type SelectorsCallbacksMap = Map<
+type SelectorsCallbacksMap<TRootState, TSelectedState = any> = Map<
     Symbol,
     {
-        selectedState: unknown;
-        callback: (selectedState: unknown) => void;
-        _callbackClone: (selectedState: unknown) => void;
+        selectedState: TSelectedState;
+        selector: (state: TRootState) => TSelectedState;
+        callback: (selectedState: TSelectedState) => void;
     }
 >;
 
@@ -14,29 +14,35 @@ type StateChangeEvent<TLatestState> = CustomEvent<{
     latestState: TLatestState;
 }>;
 
-const StateManagerEvents = {
+const StateContainerEvents = {
     statechange: "statechange",
 } as const;
 
-export class StateManager<TRootState>
+export class StateContainer<TRootState>
     extends EventTarget
-    implements IStateManager<TRootState>
+    implements IStateContainer<TRootState>
 {
     private state: TRootState;
 
-    private selectorsCallbacksMap: SelectorsCallbacksMap = new Map();
+    private selectorsCallbacksMap: SelectorsCallbacksMap<TRootState> =
+        new Map();
 
     private notifyCallbacks(latestState: TRootState) {
-        for (const {
-            selectedState,
-            callback,
-            _callbackClone,
-        } of this.selectorsCallbacksMap.values()) {
-            const newSelectedState = _callbackClone(latestState);
+        for (const [
+            symbol,
+            { selectedState, selector, callback },
+        ] of this.selectorsCallbacksMap.entries()) {
+            const newSelectedState = selector(latestState);
 
             if (!_isEqual(selectedState, newSelectedState)) {
-                callback(latestState);
+                callback(newSelectedState);
             }
+
+            this.selectorsCallbacksMap.set(symbol, {
+                selectedState: newSelectedState,
+                selector,
+                callback,
+            });
         }
     }
 
@@ -45,7 +51,7 @@ export class StateManager<TRootState>
         this.state = state;
 
         this.addEventListener(
-            StateManagerEvents.statechange,
+            StateContainerEvents.statechange,
             (stateChangeEvent) => {
                 this.notifyCallbacks.bind(this)(
                     (stateChangeEvent as StateChangeEvent<TRootState>).detail
@@ -55,18 +61,22 @@ export class StateManager<TRootState>
         );
     }
 
+    getState(): TRootState {
+        return { ...this.state };
+    }
+
     setState(state: TRootState): void {
         this.state = state;
         this.dispatchEvent(
-            new CustomEvent(StateManagerEvents.statechange, {
+            new CustomEvent(StateContainerEvents.statechange, {
                 detail: { latestState: state },
             }) satisfies StateChangeEvent<TRootState>,
         );
     }
 
-    observe(
-        selector: <ReturnType>(state: TRootState) => ReturnType,
-        callback: (value: ReturnType<typeof selector>) => void,
+    observe<ReturnType = any>(
+        selector: (state: TRootState) => ReturnType,
+        callback: (value: ReturnType) => void,
     ): () => void {
         const selectedState = selector(this.state);
         callback(selectedState);
@@ -74,8 +84,8 @@ export class StateManager<TRootState>
         const callbackSymbol = Symbol(callback.name);
         this.selectorsCallbacksMap.set(callbackSymbol, {
             selectedState,
+            selector,
             callback,
-            _callbackClone: callback.bind(null),
         });
 
         return (() => {

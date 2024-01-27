@@ -2,7 +2,12 @@ type StateSelector<TRootState> = <ReturnValue>(
     state: TRootState,
 ) => ReturnValue;
 
-export interface IStateManager<TRootState> {
+export interface IStateContainer<TRootState> {
+    /**
+     * Get the current state
+     * */
+    getState(): TRootState;
+
     /**
      * @param state
      * */

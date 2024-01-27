@@ -25,26 +25,27 @@ a:hover {
 body {
     margin: 0;
     display: flex;
-    place-items: center;
     min-width: 320px;
     min-height: 100vh;
 }
 
 h1 {
-    font-size: 3.2em;
+    font-size: 1.5em;
     line-height: 1.1;
 }
 
 #app {
     max-width: 1280px;
+    width: 100%;
     margin: 0 auto;
     padding: 2rem;
-    text-align: center;
+    display: flex;
+    flex-direction: column;
 }
 
 .logo {
-    height: 6em;
-    padding: 1.5em;
+    height: 1.2em;
+    vertical-align: bottom;
     will-change: filter;
     transition: filter 300ms;
 }
@@ -55,13 +56,6 @@ h1 {
     filter: drop-shadow(0 0 2em #3178c6aa);
 }
 
-.card {
-    padding: 2em;
-}
-
-.read-the-docs {
-    color: #888;
-}
 
 button {
     border-radius: 8px;
@@ -93,4 +87,44 @@ button:focus-visible {
     button {
         background-color: #f9f9f9;
     }
+}
+
+
+
+hr {
+    background-color: rgb(28, 28, 28);
+    width: 100%;
+    height: 1px;
+}
+
+label {
+    font-weight: bold;
+}
+
+input {
+    padding: 8px 12px;
+    font-size: 16px;
+}
+
+.crumbs {
+    margin-bottom: 16px;
+}
+.crumbs ul {
+    display: flex;
+    gap: 16px;
+    list-style-type: none;
+    padding: 0 16px;
+}
+.crumbs ul .crumb a.active {
+    color: deeppink;
+}
+.crumbs ul .crumb:not(:last-child) a::after {
+    content: '>';
+    padding: 0 4px;
+}
+
+#Page {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }

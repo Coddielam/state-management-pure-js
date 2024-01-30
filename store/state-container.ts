@@ -24,8 +24,11 @@ export class StateContainer<TRootState>
         return { ...this.state };
     }
 
-    setState(setState: (state: TRootState) => TRootState): void {
-        const newState = setState({ ...this.state });
+    setState(getNewState: (state: TRootState) => TRootState): void {
+        const newState = getNewState({ ...this.state });
+
+        if (_isEqual(newState, this.state)) return;
+
         this.state = newState;
 
         this.dispatchEvent(

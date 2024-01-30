@@ -11,7 +11,7 @@ export interface IStateContainer<TRootState> {
     /**
      * @param state
      * */
-    setState(setNewState: (state: TRootState) => TRootState): void;
+    setState(getNewState: (state: TRootState) => TRootState): void;
 
     /**
      * @param selector a function that selects the state to be observed

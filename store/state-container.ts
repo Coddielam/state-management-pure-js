@@ -24,41 +24,9 @@ export class StateContainer<TRootState>
 {
     private state: TRootState;
 
-    private selectorsCallbacksMap: SelectorsCallbacksMap<TRootState> =
-        new Map();
-
-    private notifyCallbacks(latestState: TRootState) {
-        for (const [
-            symbol,
-            { selectedState, selector, callback },
-        ] of this.selectorsCallbacksMap.entries()) {
-            const newSelectedState = selector(latestState);
-
-            if (!_isEqual(selectedState, newSelectedState)) {
-                callback(newSelectedState);
-            }
-
-            this.selectorsCallbacksMap.set(symbol, {
-                selectedState: newSelectedState,
-                selector,
-                callback,
-            });
-        }
-    }
-
     constructor(state: TRootState) {
         super();
         this.state = state;
-
-        this.addEventListener(
-            StateContainerEvents.statechange,
-            (stateChangeEvent) => {
-                this.notifyCallbacks.bind(this)(
-                    (stateChangeEvent as StateChangeEvent<TRootState>).detail
-                        .latestState,
-                );
-            },
-        );
     }
 
     getState(): TRootState {
@@ -78,18 +46,26 @@ export class StateContainer<TRootState>
         selector: (state: TRootState) => ReturnType,
         callback: (value: ReturnType) => void,
     ): () => void {
-        const selectedState = selector(this.state);
+        let selectedState = selector(this.state);
         callback(selectedState);
 
-        const callbackSymbol = Symbol(callback.name);
-        this.selectorsCallbacksMap.set(callbackSymbol, {
-            selectedState,
-            selector,
-            callback,
-        });
+        const listener = (event: Event) => {
+            const latestState = (event as StateChangeEvent<TRootState>).detail
+                .latestState;
+            const newSelectedState = selector(latestState);
 
-        return (() => {
-            this.selectorsCallbacksMap.delete(callbackSymbol);
-        }).bind(this);
+            if (!_isEqual(selectedState, newSelectedState)) {
+                callback(newSelectedState);
+                selectedState = newSelectedState;
+            }
+        };
+
+        this.addEventListener(StateContainerEvents.statechange, listener);
+
+        return () =>
+            this.removeEventListener(
+                StateContainerEvents.statechange,
+                listener,
+            );
     }
 }

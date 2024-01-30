@@ -56,5 +56,3 @@ const unobserve = store.observe(
         switchPage(activePage);
     },
 );
-
-console.clear();

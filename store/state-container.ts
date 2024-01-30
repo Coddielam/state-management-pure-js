@@ -1,15 +1,6 @@
 import { IStateContainer } from "./state-container.interface";
 import _isEqual from "lodash/isEqual";
 
-type SelectorsCallbacksMap<TRootState, TSelectedState = any> = Map<
-    Symbol,
-    {
-        selectedState: TSelectedState;
-        selector: (state: TRootState) => TSelectedState;
-        callback: (selectedState: TSelectedState) => void;
-    }
->;
-
 type StateChangeEvent<TLatestState> = CustomEvent<{
     latestState: TLatestState;
 }>;
@@ -33,11 +24,13 @@ export class StateContainer<TRootState>
         return { ...this.state };
     }
 
-    setState(state: TRootState): void {
-        this.state = state;
+    setState(setState: (state: TRootState) => TRootState): void {
+        const newState = setState({ ...this.state });
+        this.state = newState;
+
         this.dispatchEvent(
             new CustomEvent(StateContainerEvents.statechange, {
-                detail: { latestState: state },
+                detail: { latestState: this.state },
             }) satisfies StateChangeEvent<TRootState>,
         );
     }

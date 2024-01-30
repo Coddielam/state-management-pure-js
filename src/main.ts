@@ -10,9 +10,9 @@ const setupPageLink = (aTagId: string, pageNumber: number) => {
     link.onclick = (event) => {
         event.preventDefault();
 
-        store.setState({
-            ...store.getState(),
-            activePage: pageNumber,
+        store.setState((state) => {
+            state.activePage = pageNumber;
+            return state;
         });
     };
 };

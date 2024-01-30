@@ -14,15 +14,11 @@ export const createPageTwo = (slotId: string) => {
         placeholder: "Street name",
         defaultValue: state.form.pageTwo.street,
         onchange: (event) => {
-            store.setState({
-                ...state,
-                form: {
-                    ...state.form,
-                    pageTwo: {
-                        ...state.form.pageTwo,
-                        street: (event.target as HTMLInputElement).value,
-                    },
-                },
+            store.setState((state) => {
+                state.form.pageTwo.street = (
+                    event.target as HTMLInputElement
+                ).value;
+                return state;
             });
         },
     });
@@ -32,15 +28,11 @@ export const createPageTwo = (slotId: string) => {
         placeholder: "City name",
         defaultValue: state.form.pageTwo.city,
         onchange: (event) => {
-            store.setState({
-                ...state,
-                form: {
-                    ...state.form,
-                    pageTwo: {
-                        ...state.form.pageTwo,
-                        city: (event.target as HTMLInputElement).value,
-                    },
-                },
+            store.setState((state) => {
+                state.form.pageTwo.city = (
+                    event.target as HTMLInputElement
+                ).value;
+                return state;
             });
         },
     });
@@ -50,15 +42,11 @@ export const createPageTwo = (slotId: string) => {
         placeholder: "State",
         defaultValue: state.form.pageTwo.state,
         onchange: (event) => {
-            store.setState({
-                ...state,
-                form: {
-                    ...state.form,
-                    pageTwo: {
-                        ...state.form.pageTwo,
-                        state: (event.target as HTMLInputElement).value,
-                    },
-                },
+            store.setState((state) => {
+                state.form.pageTwo.state = (
+                    event.target as HTMLInputElement
+                ).value;
+                return state;
             });
         },
     });

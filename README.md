@@ -30,15 +30,9 @@ myFormStore.getState();
 ## Perform an update
 
 ```ts
-myFormStore.setState({
-    ...state,
-    form: {
-        ...state.form,
-        pageOne: {
-            ...state.form.pageOne,
-            lastName: (event.target as HTMLInputElement).value,
-        },
-    },
+myFormStore.setState((state) => {
+    state.form.pageOne.lastName = (event.target as HTMLInputElement).value;
+    return state;
 });
 ```
 

@@ -14,15 +14,11 @@ export const createPageOne = (slotId: string) => {
         placeholder: "Enter first name",
         defaultValue: state.form.pageOne.firstName,
         onchange: (event) => {
-            store.setState({
-                ...state,
-                form: {
-                    ...state.form,
-                    pageOne: {
-                        ...state.form.pageOne,
-                        firstName: (event.target as HTMLInputElement).value,
-                    },
-                },
+            store.setState((state) => {
+                state.form.pageOne.firstName = (
+                    event.target as HTMLInputElement
+                ).value;
+                return state;
             });
         },
     });
@@ -32,15 +28,11 @@ export const createPageOne = (slotId: string) => {
         placeholder: "Enter first name",
         defaultValue: state.form.pageOne.lastName,
         onchange: (event) => {
-            store.setState({
-                ...state,
-                form: {
-                    ...state.form,
-                    pageOne: {
-                        ...state.form.pageOne,
-                        lastName: (event.target as HTMLInputElement).value,
-                    },
-                },
+            store.setState((state) => {
+                state.form.pageOne.lastName = (
+                    event.target as HTMLInputElement
+                ).value;
+                return state;
             });
         },
     });
